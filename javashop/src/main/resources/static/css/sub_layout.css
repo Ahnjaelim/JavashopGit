@@ -1,0 +1,8 @@
+@charset "UTF-8";
+
+body {background:no-repeat url("../img/inc/bg.jpg") center top;}
+#body{clear:both;}
+#body_head {clear:both;height:300px;}
+#body_head h2 {text-align:center; color:#ffffff; padding:120px 0px 0px 0px; font-weight:100 !important;}
+#body_outer {background:#ffffff;}
+#body {width:1200px; margin:0px auto; padding:120px 0px 120px 0px; min-height:600px;}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<div layout:fragment="content">
+	<div id="body_head">
+		<h2>상품 목록</h2>
+	</div>
+	<div id="body_outer">
+		<div id="body">
+<!-- ================================================================================ -->
+
+<form action="/product/list" method="get">
+<input type="hidden" name="size" th:value="${pageRequestDTO.size}" />
+<div class="search">
+	<select name="type">
+		<option value="">==========</option>
+		<option value="prodName" th:selected="${pageRequestDTO.type=='prodName'}">제품 명</option>
+		<option value="prodDesc" th:selected="${pageRequestDTO.type=='prodDesc'}">제품 소개</option>
+	</select>
+	<input type="text" class="keyword" name="keyword" th:value="${pageRequestDTO.keyword}" placeholder="검색어" />
+	<button class="btn btn-outline-primary searchBtn" type="submit">Search</button>
+	<button class="btn btn-outline-primary clearBtn" type="submit">Clear</button>	
+</div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-4 g-4" th:with="link = ${pageRequestDTO.getLink()}">
+<a class="col" th:each="dto:${responseDTO.dtoList}" th:href="|@{/product/read(prodId =${dto.prodId})}&${link}|">
+<div class="card h-100">
+	<img src="" alt="제품 대표 이미지" />
+	<div class="card-body">
+		<h5 class="card-title">
+			<p>[[${dto.prodName}]]</p>
+		</h5>
+		<p class="card-text">[[${dto.prodDesc}]]</p>
+		<p>[[${dto.prodPrice}]]</p>
+		<p>리뷰 : [[${dto.reviewCount}]]</p>
+		
+	</div>
+</div>
+</a>
+</div> <!-- end of row div -->
+
+<div class="boardlist-tail">
+	<ul class="pagination">
+		<li class="page-item" th:if="${responseDTO.prev}">
+			<a class="page-link" th:data-num="${responseDTO.start -1}">&lt;</a>
+		</li>
+		<th:block th:each="i:${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+			<li th:class="${responseDTO.page == i}?'page-item active':'page-item'">
+				<a class="page-link" th:data-num="${i}">[[${i}]]</a>
+			</li>	
+		</th:block>
+		<li class="page-item" th:if="${responseDTO.next}">
+			<a class="page-link" th:data-num="${responseDTO.end +1}">&gt;</a>
+		</li>		
+	</ul>
+	<div class="btnlist"><button class="btn btn-primary" onclick="location.href='register';">제품 등록</button></div>
+</div>	
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Action Result</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================================ -->
+		</div>
+	</div>
+</div>
+
+
+<script layout:fragment="script" th:inline="javascript">
+console.log("script...............")
+document.querySelector(".pagination").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	const target = e.target
+	if(target.tagName!='A'){
+		return
+	}
+	const num = target.getAttribute("data-num")
+	const formObj = document.querySelector("form")
+	formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
+	formObj.submit();
+},false)
+document.querySelector(".clearBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	self.location='/product/list'
+},false);
+
+// show modal
+const result = [[${result}]]
+const modal = new bootstrap.Modal(document.querySelector(".modal"))
+if(result){
+	document.querySelector(".modal-body").innerHTML=result
+	modal.show()
+}
+</script>

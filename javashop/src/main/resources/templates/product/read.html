@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<div layout:fragment="content">
+	<div id="body_head">
+		<h2>상품 목록</h2>
+	</div>
+	<div id="body_outer">
+		<div id="body">
+<!-- ================================================================================ -->
+
+
+
+<div>
+<table class="table table-bordered">
+<tr>
+	<th>상품 번호</th><td>[[${dto.prodId}]]</td>
+</tr>
+<tr>
+	<th>상품 이름</th><td>[[${dto.prodName}]]</td>
+</tr>
+<tr>
+	<th>카테고리 코드</th><td>[[${dto.cateCode}]]</td>
+</tr>
+<tr>
+	<th>상품 가격</th><td>[[${dto.prodPrice}]]</td>
+</tr>
+<tr>
+	<th>상품 재고</th><td>[[${dto.prodStock}]]</td>
+</tr>
+<tr>
+	<th>상품 설명</th><td>[[${dto.prodDesc}]]</td>
+</tr>
+<tr>
+	<th>상품 조회수</th><td>[[${dto.prodHit}]]</td>
+</tr>
+<tr>
+	<th>상품 등록일</th><td>[[${dto.regDate}]]</td>
+</tr>
+</table>
+
+</div>
+
+<button class="btn btn-info addReviewBtn">댓글 쓰기</button>
+
+<div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
+    <a th:href="|@{/product/list}?${link}|" class="text-decoration-none">
+        <button type="button" class="btn btn-primary">List</button>
+    </a>
+    <a th:href="|@{/product/register(prodId=${dto.prodId})}&${link}|" class="text-decoration-none">
+        <button type="button" class="btn btn-secondary">Modify</button>
+    </a>
+</div>
+
+<!-- Modal -->
+<div class="modal registerModal" id="registerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Action Result</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+        	<span class="input-group-text">Review Text</span>
+        	<input type="text" class="form-control revText" />
+        </div>
+        <div class="input-group">
+        	<span class="input-group-text">Reviewer</span>
+        	<input type="text" class="form-control revName" />
+        </div>        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary registerBtn">Register</button>
+        <button type="button" class="btn btn-secondary closeRegisterBtn">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="list-group reviewList">
+</ul>
+
+<ul class="pagination reviewPaging">
+</ul>
+
+<!-- ================================================================================ -->
+		</div><!-- // end of #body -->
+	</div><!-- // end of #bodyouter -->
+	
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="/js/review.js"></script>	
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+const prodId = [[${dto.prodId}]]
+const reviewList = document.querySelector('.reviewList')
+const reviewPaging = document.querySelector('.reviewPaging')
+
+// 댓글 목록 출력
+function printList(dtoList){
+	let str = '';
+	if(dtoList && dtoList.length > 0){
+		for(const dto of dtoList){
+			str += `<li class="list-group-item d-flex reviewItem">
+				<span class="col-2">${dto.revId}</span>
+				<span class="col-6">${dto.revText}</span>
+				<span class="col-2">${dto.revName}</span>
+				<span class="col-2">${dto.regDate}</span>
+				</li>`
+		}
+	}
+	reviewList.innerHTML = str
+}
+
+// 댓글 페이징 출력
+function printPages(data){
+	let pageStr = '';
+	if(data.prev){
+		pageStr +=`<li class="page-item"><a class="page-link" data-page="${data.start-1}">PREV</a></li>`
+	}
+	for(let i = data.start; i <= data.end; i++){
+		pageStr +=`<li class="page-item ${i==data.page?"active":""}"><a class="page-link" data-page="${i}">${i}</a></li>`
+	}
+	if(data.next){
+		pageStr +=`<li class="page-item"><a class="page-link" data-page="${data.end+1}">NEXT</a></li>`
+	}
+	reviewPaging.innerHTML = pageStr
+}
+
+// axios로 데이터 불러오기 => 댓글 목록, 페이징 출력
+function printReviews(page, size, goLast){
+	getList({prodId, page, size, goLast}).then(
+			data => {
+				console.log(data)
+				printList(data.dtoList)
+				printPages(data)
+			}).catch(e => {
+				console.error(e)
+			})
+}
+
+printReviews(1, 10, true)
+
+/* ================================================================================ 댓글 등록 */
+
+const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"))
+const revText = document.querySelector(".revText")
+const revName = document.querySelector(".revName")
+const registerBtn = document.querySelector(".registerBtn")
+const closeRegisterBtn = document.querySelector(".closeRegisterBtn")
+
+document.querySelector(".addReviewBtn").addEventListener("click", function (e){
+    registerModal.show()
+},false)
+
+closeRegisterBtn.addEventListener("click", function(e){
+	registerModal.hide()
+},false)
+
+registerBtn.addEventListener("click", function(e){
+	const reviewObj = {
+			prodId : prodId,
+			revText : revText.value,
+			revName : revName.value}
+	addReview(reviewObj).then(result => {
+		alert(result.revId)
+		registerModal.hide()
+		revText.value=''
+		revName.value=''
+		printReviews(1,10,true)
+	}).catch(e => {
+		alert("Exception...")
+	})
+}, false)
+
+/* ================================================================================ 페이징 처리 */
+
+let page = 1
+let size = 10
+
+reviewPaging.addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	const target = e.target
+	
+	if(!target || target.tagName != 'A'){
+		return
+	}
+	
+	const pageNum = target.getAttribute("data-page")
+	page = pageNum
+	printReviews(page, size)
+}, false)
+</script>

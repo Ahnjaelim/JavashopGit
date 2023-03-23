@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+#header_outer {/*background:repeat url("../img/header/header_bg.png");*/ background:rgba(30, 30, 30, 0.9); text-align:center; height:140px;}
+#header {width:1200px; margin:0px auto; text-align:left; position:relative;}
+#header h1 {padding:40px 0px 0px 0px; width:400px; float:left;}
+#header h1 a {color:#ffffff; text-decoration:none;}
+#gnb {height:40px; text-align:right; color:#969696;}
+#gnb span {display:inline-block; color:#969696;}
+#gnb a {text-decoration:none; color:#969696; display:inline-block; padding:8px 15px 8px 15px;}
+#gnb span:last-child a {padding-right:0;}
+#navi {width:800px; float:left;}
+#navi ul {list-style:none; float:right; padding:20px 0px 0px 0px;}
+#navi li {float:left;}
+#navi li a {text-decoration:none; display:block; padding:20px; color:#ffffff; font-size:18px;}
+#navi li:last-child a {padding-right:0;}
