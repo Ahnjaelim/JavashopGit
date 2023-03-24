@@ -1,11 +1,18 @@
 package kr.co.javashop.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +26,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "imageSet")
 public class Product extends BaseEntity {
 
     @Id
@@ -53,4 +60,30 @@ public class Product extends BaseEntity {
         this.prodStock = prodStock;
         this.prodDesc = prodDesc;
     }
+    
+    // 하위 테이블인 product_image를 관리
+    // LAZY : 지연 로딩, EAGER : 즉시 로딩
+    // orphanRemoval = true : 하위 엔티티 삭제
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true) // ProductImage에 있는 private Product product; 필드
+    @Builder.Default
+    @BatchSize(size = 20)
+    private Set<ProductImage> imageSet = new HashSet<>();
+    
+    // 이미지 업로드시 imageSet에 ProductImage타입의 데이터가 리스트로 저장되고 Product에 게시글을 insert하면 ProductImage테이블에도 같이 insert됨
+    
+    public void addImage(String uuid, String fileName) {
+    	ProductImage productImage = ProductImage.builder()
+    			.uuid(uuid)
+    			.fileName(fileName)
+    			.product(this)
+    			.ord(imageSet.size())
+    			.build();
+    	imageSet.add(productImage);
+    }
+    
+    public void clearImages() {
+    	imageSet.forEach(productImage -> productImage.changeProduct(null));
+    	this.imageSet.clear();
+    }
+    
 }

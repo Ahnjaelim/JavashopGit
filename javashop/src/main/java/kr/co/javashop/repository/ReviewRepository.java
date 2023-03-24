@@ -12,4 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
 
 	@Query("select r from Review r where r.product.prodId = :prodId")
 	Page<Review> listOfBoard(@Param("prodId") Long prodId, @Param("pageable") Pageable pageable);
+	
+	void deleteByProduct_ProdId(Long prodId);
 }

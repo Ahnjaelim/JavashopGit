@@ -15,6 +15,7 @@ import kr.co.javashop.domain.Product;
 import kr.co.javashop.dto.PageRequestDTO;
 import kr.co.javashop.dto.PageResponseDTO;
 import kr.co.javashop.dto.ProductDTO;
+import kr.co.javashop.dto.ProductListAllDTO;
 import kr.co.javashop.dto.ProductListReviewCountDTO;
 import kr.co.javashop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,16 +32,19 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Long register(ProductDTO productDTO) {
-        Product product = modelMapper.map(productDTO, Product.class);
+        // Product product = modelMapper.map(productDTO, Product.class);
+    	Product product = dtoToEntity(productDTO);
         Long prodId = productRepository.save(product).getProdId();
         return prodId;
     }
 
     @Override
     public ProductDTO readOne(Long prodId) {
-        Optional<Product> result = productRepository.findById(prodId);
+        // Optional<Product> result = productRepository.findById(prodId);
+        Optional<Product> result = productRepository.findByIdWithImages(prodId);
         Product product = result.orElseThrow();
-        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        // ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        ProductDTO productDTO = entityToDTO(product);
         return productDTO;
     }
 
@@ -49,6 +53,16 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> result = productRepository.findById(productDTO.getProdId());
         Product product = result.orElseThrow();
         product.change(productDTO.getProdName(), productDTO.getCateCode(), productDTO.getProdPrice(), productDTO.getProdStock(), productDTO.getProdDesc());
+        
+        // 첨부파일 처리
+        product.clearImages();
+        if(productDTO.getFileNames()!=null) {
+        	for(String fileName : productDTO.getFileNames()) {
+        		String[] arr = fileName.split("_");
+        		product.addImage(arr[0], arr[1]);
+        	}
+        }
+        
         productRepository.save(product);
     }
 
@@ -94,6 +108,30 @@ public class ProductServiceImpl implements ProductService {
 		Pageable pageable = pageRequestDTO.getPageable("prodId");
 		Page<ProductListReviewCountDTO> result = productRepository.searchWithReviewCount(types, keyword, category, states, pageable);
 		return PageResponseDTO.<ProductListReviewCountDTO>withAll()
+				.pageRequestDTO(pageRequestDTO)
+				.dtoList(result.getContent())
+				.total((int)result.getTotalElements())
+				.build();
+	}
+
+	@Override
+	public Page<ProductListAllDTO> searchWithAll(PageRequestDTO pageRequestDTO) {
+		return null;
+	}
+
+	@Override
+	public PageResponseDTO<ProductListAllDTO> listWithAll(PageRequestDTO pageRequestDTO) {
+		log.info(pageRequestDTO);
+		String[] types = null;
+		if(pageRequestDTO.getType()!=null) {
+			types = pageRequestDTO.getType().split(",");
+		}
+		String keyword = pageRequestDTO.getKeyword();
+		String category = pageRequestDTO.getCategory();
+		String[] states = {};
+		Pageable pageable = pageRequestDTO.getPageable("prodId");
+		Page<ProductListAllDTO> result = productRepository.searchWithAll(types, keyword, category, states, pageable);
+		return PageResponseDTO.<ProductListAllDTO>withAll()
 				.pageRequestDTO(pageRequestDTO)
 				.dtoList(result.getContent())
 				.total((int)result.getTotalElements())
