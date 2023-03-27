@@ -43,6 +43,13 @@
 
 </div>
 
+<div class="col">
+	<div class="card" th:if="${dto.fileNames != null && dto.fileNames.size() > 0}">
+		<img class="card-img-top" th:each="fileName: ${dto.fileNames}" th:src="|/view/javashop/${fileName}|">
+	</div>
+</div><!--end card-->
+
+
 <button class="btn btn-info addReviewBtn">댓글 쓰기</button>
 
 <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">

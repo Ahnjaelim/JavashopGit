@@ -28,7 +28,9 @@
 <div class="row row-cols-1 row-cols-md-4 g-4" th:with="link = ${pageRequestDTO.getLink()}">
 <a class="col" th:each="dto:${responseDTO.dtoList}" th:href="|@{/product/read(prodId =${dto.prodId})}&${link}|">
 <div class="card h-100">
-	<img src="" alt="제품 대표 이미지" />
+	<div th:if="${dto.productImages != null && dto.productImages.size() > 0}">
+		<img th:src="|/view/javashop/thumb_${dto.productImages[0].uuid}_${dto.productImages[0].fileName}|" />
+	</div>
 	<div class="card-body">
 		<h5 class="card-title">
 			<p>[[${dto.prodName}]]</p>

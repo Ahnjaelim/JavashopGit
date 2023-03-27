@@ -10,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
@@ -39,6 +41,11 @@ public class Product extends BaseEntity {
     
     @Column(name = "catecode", length = 50, nullable = false)
     private String cateCode;
+	/*
+    @ManyToOne(targetEntity=Category.class, fetch=FetchType.LAZY)
+	@JoinColumn(name="catecode")
+	private Category category;    
+    */
     
     @Column(name = "prodprice", length = 10, nullable = false)
     private int prodPrice;

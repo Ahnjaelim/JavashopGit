@@ -1,7 +1,15 @@
 package kr.co.javashop.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import kr.co.javashop.dto.PageRequestDTO;
 import kr.co.javashop.dto.PageResponseDTO;
 import kr.co.javashop.dto.ProductDTO;
-import kr.co.javashop.dto.ProductListReviewCountDTO;
+import kr.co.javashop.dto.ProductListAllDTO;
 import kr.co.javashop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,13 +32,17 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class ProductController {
 	
+	@Value("${upload.path}") // application.properties 값 불러오기
+	private String uploadPath;
+	
 	private final ProductService productService;
 	
 	@GetMapping("/list")
 	public void list(PageRequestDTO pageRequestDTO, Model model) {
 		log.info("<Product Controller> list GET");
 		// PageResponseDTO<ProductDTO> responseDTO = productService.list(pageRequestDTO);
-		PageResponseDTO<ProductListReviewCountDTO> responseDTO = productService.listWithReviewCount(pageRequestDTO);
+		// PageResponseDTO<ProductListReviewCountDTO> responseDTO = productService.listWithReviewCount(pageRequestDTO);
+		PageResponseDTO<ProductListAllDTO> responseDTO = productService.listWithAll(pageRequestDTO);
 		log.info(responseDTO);
 		model.addAttribute("responseDTO", responseDTO);
 	}
@@ -92,5 +104,39 @@ public class ProductController {
 		log.info(productDTO);
 		model.addAttribute("dto", productDTO);
 		
+	}
+	
+	@PostMapping("/remove")
+	public String remove(ProductDTO productDTO, RedirectAttributes redirectAttributes) {
+		Long prodId = productDTO.getProdId();
+		log.info("remove post..."+prodId);
+		productService.remove(prodId);
+		
+		log.info(productDTO.getFileNames());
+		List<String> fileNames = productDTO.getFileNames();
+		if(fileNames != null && fileNames.size()>0) {
+			removeFiles(fileNames);
+		}
+		redirectAttributes.addFlashAttribute("result", "removed");
+		return "redirect:/product/list";
+	}
+	
+	public void removeFiles(List<String> files) {
+		for(String fileName : files) {
+			Resource resource = new FileSystemResource(uploadPath + File.separator+fileName);
+			String resourceName = resource.getFilename();
+			
+			try {
+				String contentType = Files.probeContentType(resource.getFile().toPath());
+				resource.getFile().delete();
+				if(contentType.startsWith("image")) {
+					File thumbnailFile = new File(uploadPath + File.separator+"thumb_"+fileName);
+					thumbnailFile.delete();
+				}
+			} catch (IOException e) {
+				log.error(e.getMessage());
+				
+			}
+		}
 	}
 }

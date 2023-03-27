@@ -82,7 +82,7 @@ public class UpDownController {
 	 * 때문에 좀 더 세밀한 제어가 필요한 경우 사용한다.
 	 */
 	@ApiOperation(value = "view 파일", notes = "GET방식으로 첨부파일 조회")
-	@GetMapping("/view/{fileName}")
+	@GetMapping("/view/javashop/{fileName}")
 	public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
 		Resource resource = new FileSystemResource(uploadPath+File.separator+fileName);
 		String resourceName = resource.getFilename();
