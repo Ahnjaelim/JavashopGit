@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<div layout:fragment="content">
+	<div id="body_head">
+		<h2>상품 목록</h2>
+	</div>
+	<div id="body_outer">
+		<div id="body">
+<!-- ================================================================================ -->
+
+주문 받기 어쩌구
+[[${cartlist}]]
+
+<form action="/cart/orderOk" method="post">
+<table class="table table-bordered">
+<colgroup>
+	<col width="5%" />
+	<col width="5%" />
+	<col width="*" />
+	<col width="15%" />
+	<col width="15%" />
+	<col width="15%" />
+</colgroup>
+<thead>
+<tr>
+	<th>CartId</th>
+	<th>ProdID</th>
+	<th>상품 명</th>
+	<th>상품 가격</th>
+	<th>주문 개수</th>
+	<th>총 결제 가격</th>
+</thead>
+<tbody>
+<tr th:each="dto:${cartlist}">
+	<td>[[${dto.cartId}]]<input type="text" size="1" name="cartlist" th:value="${dto.cartId}" /></td>
+	<td>[[${dto.prodId}]]</td>
+	<td>[[${dto.prodName}]]</td>
+	<td>[[${dto.prodPrice}]]</td>
+	<td>[[${dto.prodCnt}]]</td>
+	<td><input type="text" th:value="${dto.prodCnt*dto.prodPrice}" readonly class="itemTotalPrice" /></td>
+</tr>
+</tbody>
+</table>
+
+<input type="text" class="totalPrice" readonly />
+<button type="submit" class="btn btn-lg btn-danger">결제하기</button>
+</form>
+
+<!-- ================================================================================ -->
+		</div>
+	</div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+let totalPriceValue = 0
+$(".itemTotalPrice").each(function(index, item){
+	totalPriceValue = totalPriceValue+parseInt($(this).val()) 
+})
+$(".totalPrice").val(totalPriceValue)
+
+</script>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<div layout:fragment="content">
+	<div id="body_head">
+		<h2>장바구니</h2>
+	</div>
+	<div id="body_outer">
+		<div id="body">
+<!-- ================================================================================ -->
+
+[[${dtolist}]]
+
+<form action="/cart/order" method="post">
+<table class="table table-bordered">
+<colgroup>
+	<col width="5%" />
+	<col width="5%" />
+	<col width="*" />
+	<col width="15%" />
+	<col width="15%" />
+	<col width="15%" />
+</colgroup>
+<thead>
+<tr>
+	<th>선택</th>
+	<th>코드</th>
+	<th>상품 명</th>
+	<th>상품 가격</th>
+	<th>주문 개수</th>
+	<th>총 결제 가격</th>
+</thead>
+<tr th:each="dto:${dtolist}" th:class="|cart${dto.cartId}|">
+	<td><input name="cartlist" type="checkbox" th:value="${dto.cartId}" /></td>
+	<td>[[${dto.prodId}]]</td>
+	<td>[[${dto.prodName}]]</td>
+	<td><input type="text" th:value="${dto.prodPrice}" readonly class="prodPrice" /></td>
+	<td>
+		<a class="btn btn-sm btn-danger cntModifyBtn" data-logic="minus" >-</a>
+		<input size="5" type="text" class="prodCnt" th:value="${dto.prodCnt}" readonly />
+		<a class="btn btn-sm btn-primary cntModifyBtn" data-logic="plus">+</a>		
+	</td>
+	<td><input type="text" th:value="${dto.prodCnt*dto.prodPrice}" readonly class="totalPrice" /></td>
+</tr> 
+</table>
+	<button type="submit" class="btn btn-lg btn-danger">주문하기</button>
+</form>
+
+<!-- ================================================================================ -->
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="/js/cart.js"></script>		
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+$(".cntModifyBtn").each(function(index, item){
+	$(this).click(function(){
+		const cartId = $(this).closest("tr").find("input[name=cartlist]")
+		const prodPrice = $(this).closest("tr").find(".prodPrice")
+		const prodCnt = $(this).parent().find("input")
+		const totalPrice = $(this).closest("tr").find(".totalPrice")
+
+		if($(this).attr("data-logic")=="minus"){
+			const value = parseInt(prodCnt.val()) - 1
+			if(value<1){
+				prodCnt.val(1)
+			}else{
+				prodCnt.val(value)
+			}
+		}else if($(this).attr("data-logic")=="plus"){
+			const value = parseInt(prodCnt.val()) + 1
+			if(value>100){
+				alert("대량 주문시 관리자에게 문의하세요.")
+				prodCnt.val(100)
+			}else{
+				prodCnt.val(value)
+			}	
+		}
+		const totalPriceValue = parseInt(prodCnt.val())*parseInt(prodPrice.val())
+		totalPrice.val(totalPriceValue)
+		const cartObj = {
+			cartId : cartId.val(),
+			prodCnt : prodCnt.val()
+		}
+		console.log(cartObj)
+		modifyCart(cartObj).then(result => {
+		}).catch(e => {
+		})
+	})
+})
+
+
+</script>

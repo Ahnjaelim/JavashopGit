@@ -11,36 +11,46 @@
 		<div id="body">
 <!-- ================================================================================ -->
 
+<style>
+.product-view .col01 {float:left; width:600px;}
+.product-view .col02 {float:left; width:600px;}
+</style>
 
 
-<div>
-<table class="table table-bordered">
-<tr>
-	<th>상품 번호</th><td>[[${dto.prodId}]]</td>
-</tr>
-<tr>
-	<th>상품 이름</th><td>[[${dto.prodName}]]</td>
-</tr>
-<tr>
-	<th>카테고리 코드</th><td>[[${dto.cateCode}]]</td>
-</tr>
-<tr>
-	<th>상품 가격</th><td>[[${dto.prodPrice}]]</td>
-</tr>
-<tr>
-	<th>상품 재고</th><td>[[${dto.prodStock}]]</td>
-</tr>
-<tr>
-	<th>상품 설명</th><td>[[${dto.prodDesc}]]</td>
-</tr>
-<tr>
-	<th>상품 조회수</th><td>[[${dto.prodHit}]]</td>
-</tr>
-<tr>
-	<th>상품 등록일</th><td>[[${dto.regDate}]]</td>
-</tr>
-</table>
-
+<div class="product-view clearfix">
+	<div class="col01">
+		<img src="" alt="" />
+	</div>
+	<div class="col02">
+		<table class="table table-bordered">
+		<tr>
+			<th>상품 번호</th><td>[[${dto.prodId}]]</td>
+		</tr>
+		<tr>
+			<th>상품 이름</th><td>[[${dto.prodName}]]</td>
+		</tr>
+		<tr>
+			<th>카테고리 코드</th><td>[[${dto.cateCode}]]</td>
+		</tr>
+		<tr>
+			<th>상품 가격</th><td>[[${dto.prodPrice}]]</td>
+		</tr>
+		<tr>
+			<th>상품 재고</th><td>[[${dto.prodStock}]]</td>
+		</tr>
+		<tr>
+			<th>상품 설명</th><td>[[${dto.prodDesc}]]</td>
+		</tr>
+		<tr>
+			<th>상품 조회수</th><td>[[${dto.prodHit}]]</td>
+		</tr>
+		<tr>
+			<th>상품 등록일</th><td>[[${dto.regDate}]]</td>
+		</tr>
+		</table>
+		<input type="text" class="prodCnt" value="1" />
+		<button type="button" class="btn btn-lg btn-danger addCartBtn">장바구니 담기</button>
+	</div>
 </div>
 
 <div class="col">
@@ -59,6 +69,26 @@
     <a th:href="|@{/product/register(prodId=${dto.prodId})}&${link}|" class="text-decoration-none">
         <button type="button" class="btn btn-secondary">Modify</button>
     </a>
+</div>
+
+<!-- Modal -->
+<div class="modal msgModal" id="msgModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Action Result</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+		내용 어쩌구       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary registerBtn">Register</button>
+        <button type="button" class="btn btn-secondary closeRegisterBtn">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -100,6 +130,7 @@
 	
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="/js/review.js"></script>	
+	<script src="/js/cart.js"></script>	
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
@@ -202,4 +233,28 @@ reviewPaging.addEventListener("click", function(e){
 	page = pageNum
 	printReviews(page, size)
 }, false)
+
+/* ================================================================================ 카트 */
+
+const msgModal = new bootstrap.Modal(document.querySelector(".msgModal"))
+const prodCnt = document.querySelector(".prodCnt")
+document.querySelector(".addCartBtn").addEventListener("click", function(e){
+	const cartObj = {
+		memberId : "user01",
+		prodCnt : prodCnt.value,
+		prodId : prodId
+	}
+	console.log(cartObj)
+	
+	cartCheck(cartObj).then(result => {
+		alert("이미 장바구니에 담겨있는 상품입니다. 주문 개수를 추가합니다.")
+	}).catch(e => {
+		addCart(cartObj).then(result => {
+			alert("카트에 상품이 담았습니다.")
+		}).catch(e => {
+			alert("Exception...")
+		})
+	})
+}, false)
+
 </script>

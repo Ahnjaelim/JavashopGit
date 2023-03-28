@@ -21,14 +21,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Cart {
+public class Cart extends BaseEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "cartid")
 	private Long cartId;
 	
-	@Column(name = "memberId")
+	@Column(name = "memberid")
 	private String memberId;
 	
 	@Column(name = "prodid")
@@ -36,4 +36,12 @@ public class Cart {
 	
 	@Column(name = "prodcnt")
 	private int prodCnt;
+	
+	public void addProdCnt(int prodCnt) {
+		this.prodCnt = this.prodCnt + prodCnt; 
+	}
+	
+	public void changCnt(int prodCnt) {
+		this.prodCnt = prodCnt;
+	}
 }

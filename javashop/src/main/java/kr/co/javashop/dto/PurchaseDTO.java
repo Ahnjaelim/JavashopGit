@@ -1,7 +1,5 @@
 package kr.co.javashop.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO {
-	private Long cartId;
-	private String memberId;
+public class PurchaseDTO {
+
+	private Long purId;
+    private String purNo;
 	private Long prodId;
 	private int prodCnt;
-    private LocalDateTime regDate;
-    private LocalDateTime modDate;	
+	private int purTotalprice;
+	private int purState;
+	private int purDelivery;
+	private String memberId;
+	
 }
