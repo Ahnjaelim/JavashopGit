@@ -1,21 +1,27 @@
 package kr.co.javashop.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.co.javashop.dto.CartDTO;
 import kr.co.javashop.dto.CartListDTO;
 import kr.co.javashop.dto.ProductDTO;
 import kr.co.javashop.dto.PurchaseDTO;
 import kr.co.javashop.dto.PurchaseStateDTO;
+import kr.co.javashop.security.dto.MemberSecurityDTO;
 import kr.co.javashop.service.CartService;
 import kr.co.javashop.service.ProductService;
 import kr.co.javashop.service.PurchaseService;
@@ -34,10 +40,18 @@ public class CartController {
 	private final PurchaseService purchaseService;
 	private final PurchaseStateService purchaseStateService;
 	
+	@GetMapping("/username") 
+    @ResponseBody 
+    public String currentUserName(Principal principal) 
+    { 
+    	return principal.getName(); 
+    } 	
+	
 	@GetMapping("/list")
-	public void list(String memberId, Model model) {
-		// List<CartDTO> dtolist = cartService.getByMemberId(memberId);
-		List<CartListDTO> dtolist = cartService.getByMemberId(memberId);
+	public void list(Authentication authentication, Model model) {
+		MemberSecurityDTO memberSecurityDTO = (MemberSecurityDTO) authentication.getPrincipal();
+		log.info(memberSecurityDTO);
+		List<CartListDTO> dtolist = cartService.getByMemberId(memberSecurityDTO.getMid());
 		model.addAttribute("dtolist", dtolist);	
 	}
 	
@@ -63,7 +77,8 @@ public class CartController {
 	}
 	
 	@PostMapping("/orderOk")
-	public void orderOk(HttpServletRequest request, Model model) {
+	public void orderOk(Authentication authentication, HttpServletRequest request, Model model) {
+		MemberSecurityDTO memberSecurityDTO = (MemberSecurityDTO) authentication.getPrincipal();
 		String purNo = String.valueOf(System.currentTimeMillis());
 		int totalPrice = 0;
 		for(int i=0; i<request.getParameterValues("cartlist").length; i++) {
@@ -79,7 +94,7 @@ public class CartController {
 					.purTotalprice(purTotalprice)
 					.purDelivery(0)
 					.purState(0)
-					.memberId("user01")
+					.memberId(memberSecurityDTO.getMid())
 					.build();
 			purchaseService.register(purchaseDTO);
 			totalPrice = totalPrice + purTotalprice;
@@ -87,7 +102,7 @@ public class CartController {
 		}
 		PurchaseStateDTO purchaseStateDTO = PurchaseStateDTO.builder()
 				.purNo(purNo)
-				.memberId("user01")
+				.memberId(memberSecurityDTO.getMid())
 				.purState(0)
 				.purTotalprice(totalPrice)
 				.build();

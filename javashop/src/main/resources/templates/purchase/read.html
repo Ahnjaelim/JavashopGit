@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/basic.html}">
+
+<div layout:fragment="content">
+	<div id="body_head">
+		<h2>상품 목록</h2>
+	</div>
+	<div id="body_outer">
+		<div id="body">
+<!-- ================================================================================ -->
+
+<table class="table table-bordered">
+<colgroup>
+	<col width="10%" />
+	<col width="*" />
+	<col width="10%" />
+	<col width="10%" />
+	<col width="10%" />
+	<col width="10%" />
+	<col width="10%" />
+</colgroup>
+<thead>
+<tr>
+	<th>purId</th>
+	<th>주문 번호</th>
+	<th>상품 번호</th>
+	<th>상품 갯수</th>
+	<th>소계 금액</th>
+	<th>배송 상태</th>
+	<th>주문 상태</th>
+</tr>
+</thead>
+<tbody>
+	<tr th:each="dto:${dtolist}">
+		<td>[[${dto.purId}]]</td>
+		<td>[[${dto.purNo}]]</td>
+		<td>[[${dto.prodId}]]</td>
+		<td>[[${dto.prodCnt}]]</td>
+		<td>[[${dto.purTotalprice}]]</td>
+		<td>[[${dto.purDelivery}]]</td>
+		<td>[[${dto.purState}]]</td>
+	</tr>
+</tbody>
+</table>
+
+<a href="/purchase/list" class="btn btn-primary">목록으로</a>
+
+<!-- ================================================================================ -->
+		</div>
+	</div>
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+</script>

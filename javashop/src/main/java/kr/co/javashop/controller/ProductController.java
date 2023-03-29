@@ -10,6 +10,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,6 +49,7 @@ public class ProductController {
 		model.addAttribute("responseDTO", responseDTO);
 	}
 	
+	// @PreAuthorize("principal.username == 'admin'")
 	@GetMapping("/register")
 	public void registerGET(String prodId, Model model) {
 		ProductDTO productDTO = null;
@@ -69,6 +72,7 @@ public class ProductController {
 		}
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/register")
 	public String registerPOST(@Valid ProductDTO productDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 		log.info("<Product Controller> register POST");
@@ -84,6 +88,7 @@ public class ProductController {
 		return "redirect:/product/read?prodId="+prodId;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/modify")
 	public String modifyPOST(ProductDTO productDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 		log.info("<Product Controller> modify POST");
@@ -106,6 +111,7 @@ public class ProductController {
 		
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/remove")
 	public String remove(ProductDTO productDTO, RedirectAttributes redirectAttributes) {
 		Long prodId = productDTO.getProdId();

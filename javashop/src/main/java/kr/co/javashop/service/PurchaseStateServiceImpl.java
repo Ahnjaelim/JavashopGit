@@ -1,5 +1,8 @@
 package kr.co.javashop.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
@@ -25,6 +28,22 @@ public class PurchaseStateServiceImpl implements PurchaseStateService{
 		PurchaseState purchaseState = modelMapper.map(purchaseStateDTO, PurchaseState.class);
 		String purNo = purchaseStateRepository.save(purchaseState).getPurNo();
 		return purNo;
+	}
+
+	@Override
+	public List<PurchaseStateDTO> getAll() {
+		List<PurchaseState> result = purchaseStateRepository.findAll(); 
+		List<PurchaseStateDTO> dtolist = purchaseStateRepository.findAll().stream().map(
+				entity -> modelMapper.map(entity, PurchaseStateDTO.class)).collect(Collectors.toList());
+		return dtolist;
+	}
+
+	@Override
+	public List<PurchaseStateDTO> getAllByMemberId(String memberId) {
+		List<PurchaseState> result = purchaseStateRepository.findAll(); 
+		List<PurchaseStateDTO> dtolist = purchaseStateRepository.findAllByMemberId(memberId).stream().map(
+				entity -> modelMapper.map(entity, PurchaseStateDTO.class)).collect(Collectors.toList());
+		return dtolist;
 	}
 
 	

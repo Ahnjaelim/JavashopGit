@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
       layout:decorate="~{layout/basic.html}">
 
 <div layout:fragment="content">
@@ -11,7 +12,8 @@
 		<div id="body">
 <!-- ================================================================================ -->
 
-[[${dtolist}]]
+<div style="padding:30px; border:1px solid #dcdcdc;">[[${dtolist}]]</div>
+<div style="padding:30px; border:1px solid #dcdcdc;">[[${#authentication.principal}]]</div>
 
 <form action="/cart/order" method="post">
 <table class="table table-bordered">
