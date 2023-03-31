@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 
 import kr.co.javashop.domain.Product;
@@ -157,7 +158,6 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         QWish wish = QWish.wish;
         
         JPQLQuery<Product> productJPQLquery = from(product); // select from Product엔티티
-        JPQLQuery<Wish> wishquery = from(wish);
         productJPQLquery.leftJoin(review).on(review.product.eq(product)); // product 테이블을 review 테이블과 레프트 조인
 
         // ================================================== 검색처리
@@ -192,14 +192,16 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         productJPQLquery.groupBy(product);
         getQuerydsl().applyPagination(pageable, productJPQLquery); // 페이징
         	
-        JPQLQuery<Tuple> tupleJPQLQuery = productJPQLquery.select(product, review.countDistinct());
+        JPQLQuery<Tuple> tupleJPQLQuery = productJPQLquery.select(product, review.countDistinct(), 
+        		JPAExpressions.select(wish.countDistinct()).from(wish).where(wish.prodId.eq(product.prodId))
+        );
+        
         List<Tuple> tupleList = tupleJPQLQuery.fetch();
         List<ProductListAllDTO> dtoList = tupleList.stream().map(tuple -> {
+        	
         	Product product1 = (Product) tuple.get(product);
-        	wishquery.where(wish.prodId.eq(product1.getProdId()));
-        	wishquery.fetch();
-        	long prodWish = wishquery.fetchCount(); 
         	long reviewCount = tuple.get(1, Long.class);
+        	long wishCount = tuple.get(2, Long.class);
         	ProductListAllDTO dto = ProductListAllDTO.builder()
     			.cateCode(product1.getCateCode())
     			.prodId(product1.getProdId())
@@ -208,7 +210,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     			.prodPrice(product1.getProdPrice())
     			.prodStock(product1.getProdStock())
     			.prodFile(product1.getProdFile())
-    			.prodWish(prodWish)
+    			.prodWish(wishCount)
     			.regDate(product1.getRegDate())
     			.reviewCount(reviewCount)
     			.build();
