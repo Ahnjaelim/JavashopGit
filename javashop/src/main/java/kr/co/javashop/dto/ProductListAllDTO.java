@@ -22,6 +22,8 @@ public class ProductListAllDTO {
     private int prodStock;
     private String prodDesc;
     private int prodHit;
+    private String prodFile;
+    private Long prodWish;
     private LocalDateTime regDate;
     private Timestamp modDate;
 	private Long reviewCount;

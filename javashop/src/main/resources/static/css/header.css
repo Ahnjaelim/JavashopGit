@@ -6,7 +6,7 @@
 #header h1 a {color:#ffffff; text-decoration:none;}
 #gnb {height:40px; text-align:right; color:#969696;}
 #gnb span {display:inline-block; color:#969696;}
-#gnb a {text-decoration:none; color:#969696; display:inline-block; padding:8px 15px 8px 15px;}
+#gnb a {text-decoration:none; color:#969696; display:inline-block; padding:15px 0px 8px 15px;}
 #gnb span:last-child a {padding-right:0;}
 #navi {width:800px; float:left;}
 #navi ul {list-style:none; float:right; padding:20px 0px 0px 0px;}

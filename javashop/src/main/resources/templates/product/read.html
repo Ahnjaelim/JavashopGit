@@ -20,7 +20,7 @@
 
 <div class="product-view clearfix">
 	<div class="col01">
-		<img src="" alt="" />
+		<img th:src="|/view/javashop/${dto.prodFile}|" width="570px" height="570px" alt="" />
 	</div>
 	<div class="col02">
 		<table class="table table-bordered">
@@ -46,11 +46,13 @@
 			<th>상품 조회수</th><td>[[${dto.prodHit}]]</td>
 		</tr>
 		<tr>
-			<th>상품 등록일</th><td>[[${dto.regDate}]]</td>
+			<th>상품 등록일</th><td>[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</td>
 		</tr>
 		</table>
 		<input type="text" class="prodCnt" value="1" />
+		
 		<button type="button" class="btn btn-lg btn-danger addCartBtn">장바구니 담기</button>
+		<button type="button" class="btn btn-lg addWishBtn btn-warning">찜하기</button>
 	</div>
 </div>
 
@@ -73,22 +75,18 @@
     </a>
 </div>
 </th:block>
+
 <!-- Modal -->
-<div class="modal msgModal" id="msgModal" tabindex="-1">
+<div class="modal msgModal" id="registerModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Action Result</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-		내용 어쩌구       
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary registerBtn">Register</button>
-        <button type="button" class="btn btn-secondary closeRegisterBtn">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Save changes</button>-->
-      </div>
+	      <div class="modal-body">
+	      	어쩌구 저쩌구
+	      </div>
     </div>
   </div>
 </div>
@@ -101,23 +99,30 @@
         <h1 class="modal-title fs-5" id="exampleModalLabel">Action Result</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <th:block>
-	      <div class="modal-body">
-	        <div class="input-group">
-	        	<span class="input-group-text">Review Text</span>
-	        	<input type="text" class="form-control revText" />
-	        </div>
-	        <div class="input-group">
-	        	<span class="input-group-text">Reviewer</span>
-	        	<input type="text" class="form-control revName" readonly />
-	        </div>        
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-primary registerBtn">Register</button>
-	        <button type="button" class="btn btn-secondary closeRegisterBtn">Close</button>
-	        <!-- <button type="button" class="btn btn-primary">Save changes</button>-->
-	      </div>
-	  </th:block> 
+      
+		<th:block th:if="${user != 'anonymousUser'}">
+		<div class="modal-body">
+			<div class="input-group">
+				<span class="input-group-text">Review Text</span>
+				<input type="text" class="form-control revText" />
+			</div>
+			<div class="input-group">
+				<span class="input-group-text">Reviewer</span>
+				<input type="text" class="form-control revName" readonly />
+			</div>        
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-primary registerBtn">Register</button>
+			<button type="button" class="btn btn-secondary closeRegisterBtn">Close</button>
+			<!-- <button type="button" class="btn btn-primary">Save changes</button>-->
+		</div>
+		</th:block>
+		<th:block th:if="${user == 'anonymousUser'}">
+		<div class="modal-body">
+			회원만 리뷰를 작성할 수 있습니다.
+		</div>
+		</th:block>
+	     
     </div>
   </div>
 </div>
@@ -135,6 +140,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 	<script src="/js/review.js"></script>	
 	<script src="/js/cart.js"></script>	
+	<script src="/js/wish.js"></script>	
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
@@ -208,7 +214,9 @@ registerBtn.addEventListener("click", function(e){
 	const reviewObj = {
 			prodId : prodId,
 			revText : revText.value,
-			revName : revName.value}
+			revName : revName.value
+	}
+	console.log(reviewObj)
 	addReview(reviewObj).then(result => {
 		alert(result.revId)
 		registerModal.hide()
@@ -262,5 +270,58 @@ document.querySelector(".addCartBtn").addEventListener("click", function(e){
 		})
 	})
 }, false)
+
+/* ================================================================================ 찜하기 */
+
+
+let wid = 0
+const addWishBtn = document.querySelector(".addWishBtn")
+addWishBtn.addEventListener("click", function(e){
+	const wishObj = {
+			mid : auth.username,
+			prodId : prodId
+	}
+	checkWish(wishObj).then(result => {
+		wid = result.result
+	}).catch(e => {
+		wid = 0
+	}).finally(() => {
+		if(wid==0){
+			addWish(wishObj).then(result => {
+				alert("위시리스트에 추가했습니다.")
+				addWishBtn.classList.remove("btn-warning")
+				addWishBtn.classList.add("btn-outline-warning")
+			}).catch(e => {
+				alert("Exception1")
+			})
+		}else{
+			removeWish(wid).then(result => {
+				alert("위시리스트에서 삭제합니다.")
+				addWishBtn.classList.remove("btn-outline-warning")
+				addWishBtn.classList.add("btn-warning")
+			}).catch(e => {
+				alert("Exception2")
+			})
+		}		
+	})
+
+},false)
+
+const wishObj = {
+		mid : auth.username,
+		prodId : prodId
+}
+console.log(wishObj)
+checkWish(wishObj).then(result => {
+	wid = result.result
+	if(wid==0){
+		addWishBtn.classList.remove("btn-outline-warning")
+		addWishBtn.classList.add("btn-warning")	
+	}else{
+		addWishBtn.classList.remove("btn-warning")
+		addWishBtn.classList.add("btn-outline-warning")
+	}
+}).catch(e => {
+})
 
 </script>

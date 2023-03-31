@@ -10,8 +10,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,7 +24,10 @@ import kr.co.javashop.dto.PageRequestDTO;
 import kr.co.javashop.dto.PageResponseDTO;
 import kr.co.javashop.dto.ProductDTO;
 import kr.co.javashop.dto.ProductListAllDTO;
+import kr.co.javashop.dto.WishDTO;
+import kr.co.javashop.security.dto.MemberSecurityDTO;
 import kr.co.javashop.service.ProductService;
+import kr.co.javashop.service.WishService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -38,6 +41,7 @@ public class ProductController {
 	private String uploadPath;
 	
 	private final ProductService productService;
+	private final WishService wishService;
 	
 	@GetMapping("/list")
 	public void list(PageRequestDTO pageRequestDTO, Model model) {
@@ -104,11 +108,17 @@ public class ProductController {
 	
 	@GetMapping("/read")
 	public void read(Long prodId, PageRequestDTO pageRequestDTO, Model model) {
+		// MemberSecurityDTO memberSecurityDTO = (MemberSecurityDTO) authentication.getPrincipal();
 		log.info("<Product Controller> read GET");
 		ProductDTO productDTO = productService.readOne(prodId);
-		log.info(productDTO);
+		log.info(productDTO);		
 		model.addAttribute("dto", productDTO);
 		
+		// 찜 상태
+		// Long resultCode = wishService.checkWish(memberSecurityDTO.getMid(), productDTO.getProdId());
+		model.addAttribute("wish", "");
+		// WishDTO wishDTO = wishService.readOne(memberSecurityDTO.getMid(), productDTO.getProdId());
+		model.addAttribute("wishdto", "");
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")

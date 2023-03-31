@@ -36,7 +36,7 @@ public class Product extends BaseEntity {
     @Column(name = "prodid")
     private Long prodId;
     
-    @Column(name = "prodname", length = 200, nullable = false)
+    @Column(name = "prodname", length = 255, nullable = false)
     private String prodName;
     
     @Column(name = "catecode", length = 50, nullable = false)
@@ -59,6 +59,9 @@ public class Product extends BaseEntity {
     @Column(name = "prodhit", length = 10, nullable = false)
     @ColumnDefault("0")
     private int prodHit;
+    
+    @Column(name = "prodfile", length = 255, nullable = true)
+    private String prodFile;
 
     public void change(String prodName, String cateCode, int prodPrice, int prodStock, String prodDesc) {
         this.prodName = prodName;
@@ -66,6 +69,10 @@ public class Product extends BaseEntity {
         this.prodPrice = prodPrice;
         this.prodStock = prodStock;
         this.prodDesc = prodDesc;
+    }
+    
+    public void changeThumbnail(String prodFile) {
+    	this.prodFile = prodFile;
     }
     
     // 하위 테이블인 product_image를 관리

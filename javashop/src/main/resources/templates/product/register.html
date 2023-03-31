@@ -14,52 +14,69 @@
 
 <form method="post" th:attr="action=${dto.prodId == 0 ? '/product/register' : '/product/modify'}" enctype="multipart/form-data" id="f1">
 <input th:if="${dto.prodId>0}" type="hidden" name="prodId" th:value="${dto.prodId}" />
-<div class="card-body">
- 
-    <div class="input-group mb-3">
-      <span class="input-group-text">상품 명</span>
-      <input type="text" name="prodName" class="form-control" th:value="${dto.prodName}">
-    </div>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text">카테고리</span>
-      <input type="text" name="cateCode" class="form-control" th:value="${dto.cateCode}">
-    </div>
+<table style="width:100%;" >
+<colgroup>
+	<col width="400px" />
+	<col width="*" />
+</colgroup>
+<tbody>
+<tr style="vertical-align:top;">
+	<td>
+		<img th:src="|/view/javashop/${dto.prodFile}|" alt="" />
+		<input type="file" name="multipartFile" />
+	</td>
+	<td>
+		<div class="card-body">
+		    <div class="input-group mb-3">
+		      <span class="input-group-text">상품 명</span>
+		      <input type="text" name="prodName" class="form-control" th:value="${dto.prodName}">
+		    </div>
+		
+		    <div class="input-group mb-3">
+		      <span class="input-group-text">카테고리</span>
+		      <input type="text" name="cateCode" class="form-control" th:value="${dto.cateCode}">
+		    </div>
+		
+		    <div class="input-group mb-3">
+		      <span class="input-group-text">상품 가격</span>
+		      <input type="text" name="prodPrice" class="form-control" th:value="${dto.prodPrice}">
+		    </div>
+		
+		    <div class="input-group mb-3">
+		      <span class="input-group-text">상품 재고</span>
+		      <input type="text" name="prodStock" class="form-control" th:value="${dto.prodStock}">
+		    </div>
+		
+		    <div class="input-group mb-3">
+		      <span class="input-group-text">상품 설명</span>
+		      <textarea class="form-control col-sm-5" rows="5" name="prodDesc">[[${dto.prodDesc}]]</textarea>
+		    </div>
+		
+		    <div class="input-group mb-3">
+		      <span class="input-group-text">이미지 업로드</span>
+		      <div class="float-end uploadHidden">
+		      	<button type="button" class="btn btn-primary uploadFileBtn">ADD Files</button>
+		      </div>
+		    </div>
+		
+		
+		    <div>
+		      <div>
+		      	<a class="btn btn-primary" href="/product/list">목록</a>
+		        <a class="btn btn-primary submitBtn">Submit</a>
+		        <a class="btn btn-danger removeBtn">삭제</a>
+		        <button type="reset" class="btn btn-secondary">Reset</button>
+		      </div>
+		    </div>
+		  </form>
+		</div><!--end card body-->	
+	</td>
+</tr>
+</tbody>
+</table>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text">상품 가격</span>
-      <input type="text" name="prodPrice" class="form-control" th:value="${dto.prodPrice}">
-    </div>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text">상품 재고</span>
-      <input type="text" name="prodStock" class="form-control" th:value="${dto.prodStock}">
-    </div>
-
-    <div class="input-group mb-3">
-      <span class="input-group-text">상품 설명</span>
-      <textarea class="form-control col-sm-5" rows="5" name="prodDesc">[[${dto.prodDesc}]]</textarea>
-    </div>
-
-    <div class="input-group mb-3">
-      <span class="input-group-text">이미지 업로드</span>
-      <div class="float-end uploadHidden">
-      	<button type="button" class="btn btn-primary uploadFileBtn">ADD Files</button>
-      </div>
-    </div>
-
-
-    <div>
-      <div>
-      	<a class="btn btn-primary" href="/product/list">목록</a>
-        <a class="btn btn-primary submitBtn">Submit</a>
-        <a class="btn btn-danger removeBtn">삭제</a>
-        <button type="reset" class="btn btn-secondary">Reset</button>
-      </div>
-    </div>
-    
-  </form>
-</div><!--end card body-->
 
 <div class="row mt-3">
 <div class="col">

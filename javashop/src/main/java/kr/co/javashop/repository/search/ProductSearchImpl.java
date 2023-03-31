@@ -16,6 +16,8 @@ import com.querydsl.jpa.JPQLQuery;
 import kr.co.javashop.domain.Product;
 import kr.co.javashop.domain.QProduct;
 import kr.co.javashop.domain.QReview;
+import kr.co.javashop.domain.QWish;
+import kr.co.javashop.domain.Wish;
 import kr.co.javashop.dto.ProductImageDTO;
 import kr.co.javashop.dto.ProductListAllDTO;
 import kr.co.javashop.dto.ProductListReviewCountDTO;
@@ -35,6 +37,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     public Page<Product> searchAll(String[] types, String keyword, String category, String[] states, Pageable pageable) {
 
         QProduct product = QProduct.product; // Q도메인 객체
+        QWish wish = QWish.wish;
         JPQLQuery<Product> query = from(product); // select from recipe 객체
 
         if((types != null && types.length > 0) && keyword != null) { // 검색 조건과 키워드가 있다면
@@ -113,6 +116,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         		product.prodDesc,
         		product.prodPrice,
         		product.prodStock,
+        		product.prodFile,
         		product.regDate,
         		review.count().as("reviewCount")
         ));
@@ -150,10 +154,12 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         QProduct product = QProduct.product;
         QReview review = QReview.review;
+        QWish wish = QWish.wish;
         
         JPQLQuery<Product> productJPQLquery = from(product); // select from Product엔티티
+        JPQLQuery<Wish> wishquery = from(wish);
         productJPQLquery.leftJoin(review).on(review.product.eq(product)); // product 테이블을 review 테이블과 레프트 조인
-        
+
         // ================================================== 검색처리
         
         if((types != null && types.length > 0) && keyword != null) { // 검색 조건과 키워드가 있다면
@@ -190,6 +196,9 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         List<Tuple> tupleList = tupleJPQLQuery.fetch();
         List<ProductListAllDTO> dtoList = tupleList.stream().map(tuple -> {
         	Product product1 = (Product) tuple.get(product);
+        	wishquery.where(wish.prodId.eq(product1.getProdId()));
+        	wishquery.fetch();
+        	long prodWish = wishquery.fetchCount(); 
         	long reviewCount = tuple.get(1, Long.class);
         	ProductListAllDTO dto = ProductListAllDTO.builder()
     			.cateCode(product1.getCateCode())
@@ -198,6 +207,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     			.prodDesc(product1.getProdDesc())
     			.prodPrice(product1.getProdPrice())
     			.prodStock(product1.getProdStock())
+    			.prodFile(product1.getProdFile())
+    			.prodWish(prodWish)
     			.regDate(product1.getRegDate())
     			.reviewCount(reviewCount)
     			.build();

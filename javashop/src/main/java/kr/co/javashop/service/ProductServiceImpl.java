@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import kr.co.javashop.common.FileUpload;
 import kr.co.javashop.domain.Product;
 import kr.co.javashop.dto.PageRequestDTO;
 import kr.co.javashop.dto.PageResponseDTO;
@@ -29,10 +30,13 @@ public class ProductServiceImpl implements ProductService {
 
     private final ModelMapper modelMapper;
     private final ProductRepository productRepository;
+    private final FileUpload fileUpload;
 
     @Override
     public Long register(ProductDTO productDTO) {
-        // Product product = modelMapper.map(productDTO, Product.class);
+        log.info(productDTO);
+    	String prodFile = fileUpload.fileUpload(productDTO.getMultipartFile());
+    	productDTO.setProdFile(prodFile);
     	Product product = dtoToEntity(productDTO);
         Long prodId = productRepository.save(product).getProdId();
         return prodId;
@@ -53,6 +57,15 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> result = productRepository.findById(productDTO.getProdId());
         Product product = result.orElseThrow();
         product.change(productDTO.getProdName(), productDTO.getCateCode(), productDTO.getProdPrice(), productDTO.getProdStock(), productDTO.getProdDesc());
+        
+        // 썸네일 수정 확인
+		if(!productDTO.getMultipartFile().getOriginalFilename().equals("")) {
+			log.info("썸네일 파일이 수정되었습니다.");
+			String prodFile = fileUpload.fileUpload(productDTO.getMultipartFile());
+			product.changeThumbnail(prodFile);
+		}else {
+			log.info("썸네일 파일이 수정되지 않았습니다.");
+		}        
         
         // 첨부파일 처리
         product.clearImages();

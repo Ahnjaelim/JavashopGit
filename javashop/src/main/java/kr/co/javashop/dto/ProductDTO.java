@@ -7,6 +7,8 @@ import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import kr.co.javashop.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,8 +38,14 @@ public class ProductDTO {
     private String prodDesc;
     
     private int prodHit;
+
+    private MultipartFile multipartFile;
+    private String prodFile;
+    
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+    
+
     
     // 첨부파일 이름들
     private List<String> fileNames;

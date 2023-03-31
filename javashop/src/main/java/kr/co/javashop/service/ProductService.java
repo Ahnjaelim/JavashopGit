@@ -41,6 +41,7 @@ public interface ProductService {
     		.prodDesc(productDTO.getProdDesc())
     		.prodPrice(productDTO.getProdPrice())
     		.prodStock(productDTO.getProdStock())
+    		.prodFile(productDTO.getProdFile())
     		.build();
     	if(productDTO.getFileNames()!=null) {
     		productDTO.getFileNames().forEach(fileName -> {
@@ -60,6 +61,8 @@ public interface ProductService {
         		.prodDesc(product.getProdDesc())
         		.prodPrice(product.getProdPrice())
         		.prodStock(product.getProdStock())
+        		.prodFile(product.getProdFile())
+        		.regDate(product.getRegDate())
         		.build();
     	List<String> fileNames = product.getImageSet().stream().sorted().map(productImage -> 
     		productImage.getUuid()+"_"+productImage.getFileName()

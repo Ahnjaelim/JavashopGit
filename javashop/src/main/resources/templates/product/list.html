@@ -11,6 +11,20 @@
 		<div id="body">
 <!-- ================================================================================ -->
 
+<style>
+.product-list {width:100%;}
+.product-list a {display:block; width:277px; height:440px; float:left; border-radius:8px; border:1px solid #c8c8c8; margin:0px 30px 30px 0px;}
+.product-list a:nth-child(4n) {margin:0px 0px 30px 0px;}
+.product-list a dt img {width:275px; height:275px; border-radius:6px 6px 0px 0px;}
+.product-list dd {text-align:center;}
+.product-list dd p {margin:0; padding:0; line-height:1em;}
+.product-list dd .title {font-size:1.2em; padding:30px 0px 13px 0px;}
+.product-list dd .price {font-size:1.5em; font-weight:900; padding:0px 0px 13px 0px;}
+.product-list dd .review,
+.product-list dd .review span,
+.product-list dd .review i {color:#b4b4b4;}
+.product-list dd .review span {display:inline-block; padding:0px 5px 0px 5px;}
+</style>
 <form action="/product/list" method="get">
 <input type="hidden" name="size" th:value="${pageRequestDTO.size}" />
 <div class="search">
@@ -25,22 +39,22 @@
 </div>
 </form>
 
-<div class="row row-cols-1 row-cols-md-4 g-4" th:with="link = ${pageRequestDTO.getLink()}">
-<a class="col" th:each="dto:${responseDTO.dtoList}" th:href="|@{/product/read(prodId =${dto.prodId})}&${link}|">
-<div class="card h-100">
-	<div th:if="${dto.productImages != null && dto.productImages.size() > 0}">
-		<img th:src="|/view/javashop/thumb_${dto.productImages[0].uuid}_${dto.productImages[0].fileName}|" />
-	</div>
-	<div class="card-body">
-		<h5 class="card-title">
-			<p>[[${dto.prodName}]]</p>
-		</h5>
-		<p class="card-text">[[${dto.prodDesc}]]</p>
-		<p>[[${dto.prodPrice}]]</p>
-		<p>리뷰 : [[${dto.reviewCount}]]</p>
-		
-	</div>
-</div>
+<div class="product-list clearfix" th:with="link = ${pageRequestDTO.getLink()}">
+<a th:each="dto:${responseDTO.dtoList}" th:href="|@{/product/read(prodId =${dto.prodId})}&${link}|">
+<dl>
+	<dt>
+		<img th:if="${dto.prodFile != null}" th:src="|/view/javashop/${dto.prodFile}|" alt="" />
+		<img th:if="${dto.prodFile == null}" src="/img/noimg.jpg" alt="등록된 이미지가 없습니다." />
+	</dt>
+	<dd>
+		<p class="title">[[${dto.prodName}]]</p>
+		<p class="price">[[${#numbers.formatInteger(dto.prodPrice, 3, 'COMMA')}]]</p>
+		<p class="review">
+			<span><i class="fa-solid fa-comment"></i> [[${dto.reviewCount}]]</span>
+			<span><i class="fa-solid fa-heart"></i> [[${dto.prodWish}]]</span>
+		</p>
+	</dd>
+</dl>
 </a>
 </div> <!-- end of row div -->
 
