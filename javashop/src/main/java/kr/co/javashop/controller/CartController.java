@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,6 +48,7 @@ public class CartController {
     	return principal.getName(); 
     } 	
 	
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/list")
 	public void list(Authentication authentication, Model model) {
 		MemberSecurityDTO memberSecurityDTO = (MemberSecurityDTO) authentication.getPrincipal();
@@ -55,6 +57,7 @@ public class CartController {
 		model.addAttribute("dtolist", dtolist);	
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/order")
 	public void order(HttpServletRequest request, Model model) {
 		List<Object> cartlist = new ArrayList<>();
@@ -76,6 +79,7 @@ public class CartController {
 		model.addAttribute("cartlist", cartlist);
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/orderOk")
 	public void orderOk(Authentication authentication, HttpServletRequest request, Model model) {
 		MemberSecurityDTO memberSecurityDTO = (MemberSecurityDTO) authentication.getPrincipal();

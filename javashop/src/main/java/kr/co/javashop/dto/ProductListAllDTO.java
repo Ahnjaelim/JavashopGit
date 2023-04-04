@@ -27,5 +27,6 @@ public class ProductListAllDTO {
     private LocalDateTime regDate;
     private Timestamp modDate;
 	private Long reviewCount;
+	private Long salesCount;
 	private List<ProductImageDTO> productImages;
 }

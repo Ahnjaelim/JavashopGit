@@ -24,6 +24,7 @@
 .product-list dd .review span,
 .product-list dd .review i {color:#b4b4b4;}
 .product-list dd .review span {display:inline-block; padding:0px 5px 0px 5px;}
+.search {padding:0px 0px 30px 0px;}
 </style>
 <form action="/product/list" method="get">
 <input type="hidden" name="size" th:value="${pageRequestDTO.size}" />
@@ -52,6 +53,7 @@
 		<p class="review">
 			<span><i class="fa-solid fa-comment"></i> [[${dto.reviewCount}]]</span>
 			<span><i class="fa-solid fa-heart"></i> [[${dto.prodWish}]]</span>
+			<span><i class="fa-solid fa-cart-shopping"></i> [[${dto.salesCount}]]</span>
 		</p>
 	</dd>
 </dl>

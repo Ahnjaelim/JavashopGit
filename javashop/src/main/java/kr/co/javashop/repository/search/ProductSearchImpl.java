@@ -16,6 +16,7 @@ import com.querydsl.jpa.JPQLQuery;
 
 import kr.co.javashop.domain.Product;
 import kr.co.javashop.domain.QProduct;
+import kr.co.javashop.domain.QPurchase;
 import kr.co.javashop.domain.QReview;
 import kr.co.javashop.domain.QWish;
 import kr.co.javashop.domain.Wish;
@@ -156,6 +157,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         QProduct product = QProduct.product;
         QReview review = QReview.review;
         QWish wish = QWish.wish;
+        QPurchase purchase = QPurchase.purchase;
         
         JPQLQuery<Product> productJPQLquery = from(product); // select from Product엔티티
         productJPQLquery.leftJoin(review).on(review.product.eq(product)); // product 테이블을 review 테이블과 레프트 조인
@@ -193,7 +195,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         getQuerydsl().applyPagination(pageable, productJPQLquery); // 페이징
         	
         JPQLQuery<Tuple> tupleJPQLQuery = productJPQLquery.select(product, review.countDistinct(), 
-        		JPAExpressions.select(wish.countDistinct()).from(wish).where(wish.prodId.eq(product.prodId))
+        		JPAExpressions.select(wish.countDistinct()).from(wish).where(wish.prodId.eq(product.prodId)),
+        		JPAExpressions.select(purchase.countDistinct()).from(purchase).where(purchase.prodId.eq(product.prodId))
         );
         
         List<Tuple> tupleList = tupleJPQLQuery.fetch();
@@ -202,6 +205,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         	Product product1 = (Product) tuple.get(product);
         	long reviewCount = tuple.get(1, Long.class);
         	long wishCount = tuple.get(2, Long.class);
+        	long salesCount = tuple.get(3, Long.class);
         	ProductListAllDTO dto = ProductListAllDTO.builder()
     			.cateCode(product1.getCateCode())
     			.prodId(product1.getProdId())
@@ -213,6 +217,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     			.prodWish(wishCount)
     			.regDate(product1.getRegDate())
     			.reviewCount(reviewCount)
+    			.salesCount(salesCount)
     			.build();
         	
         	// ProductImage를 ProductImageDTO로 변환
