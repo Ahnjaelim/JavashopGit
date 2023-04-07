@@ -42,8 +42,8 @@ public class CategoryController {
 			return "redirect:/category/register";
 		}
 		
-		Long cateCode = categoryService.register(categoryDTO);
-		redirectAttributes.addFlashAttribute("result", cateCode);
+		categoryService.register(categoryDTO);
+		// redirectAttributes.addFlashAttribute("result", cateCode);
 		return "redirect:/category/list";
 	}	
 	

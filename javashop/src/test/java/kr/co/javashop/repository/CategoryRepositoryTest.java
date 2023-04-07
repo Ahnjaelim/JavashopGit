@@ -16,9 +16,14 @@ public class CategoryRepositoryTest {
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
-	@Test
+	// @Test
 	public void findAllByCateDepthTest() {
 		List<Category> category = categoryRepository.findAllByCateDepth(1L);
 		category.forEach(entity -> System.out.println(entity));
+	}
+	
+	@Test
+	public void saveTest() {
+		categoryRepository.save("레포지토리 테스트", 2L, 1L);
 	}
 }

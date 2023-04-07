@@ -10,12 +10,13 @@ public interface CategoryService {
 	Long register(CategoryDTO categoryDTO);
 	
 	List<CategoryDTO> getAll(Long depth);
-	
+
+	/*
 	default Category dtoToEntity(CategoryDTO categoryDTO) {
 		Category category = Category.builder()
-			.cateDepth(2L)
+			.cateDepth(categoryDTO.getCateDepth())
 			.cateName(categoryDTO.getCateName())
 			.build();
 		return category;
-	}
+	}*/
 }

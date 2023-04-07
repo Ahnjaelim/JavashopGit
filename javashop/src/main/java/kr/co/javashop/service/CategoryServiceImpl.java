@@ -1,12 +1,12 @@
 package kr.co.javashop.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import kr.co.javashop.domain.Category;
 import kr.co.javashop.dto.CategoryDTO;
 import kr.co.javashop.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,18 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Long register(CategoryDTO categoryDTO) {
 		System.out.println(categoryDTO);
-		// Category category =  modelMapper.map(categoryDTO, Category.class);
-		Category category = dtoToEntity(categoryDTO);
+		/*Category category =  modelMapper.map(categoryDTO, Category.class);
+		// Category category = dtoToEntity(categoryDTO);
 		System.out.println(category);
 		Long cateCode = categoryRepository.save(category).getCateCode();
-		return cateCode;
+		return cateCode;*/
+		HashMap<String, Object> fieldmap = new HashMap<>();
+		fieldmap.put("cateName", categoryDTO.getCateName());
+		fieldmap.put("cateDepth", categoryDTO.getCateDepth());
+		fieldmap.put("cateParent", categoryDTO.getCateParentCode());
+		categoryRepository.save(fieldmap.get("cateName"), fieldmap.get("cateDepth"), fieldmap.get("cateParent"));
+		
+		return null;
 	}
 
 	@Override

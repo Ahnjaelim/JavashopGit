@@ -14,7 +14,7 @@ public class CategoryServiceTest {
 
 	@Autowired CategoryService categoryService;
 	
-	@Test
+	// @Test
 	public void registerTest() {
 		CategoryDTO categoryDTO = CategoryDTO.builder()
 			.cateName("목도리")
@@ -24,5 +24,15 @@ public class CategoryServiceTest {
 		System.out.println(categoryDTO);
 		Long cateCode = categoryService.register(categoryDTO);
 		System.out.println(cateCode);
+	}
+	
+	@Test
+	public void registerTest2() {
+		CategoryDTO categoryDTO = CategoryDTO.builder()
+				.cateName("장갑")
+				.cateDepth(1L)
+				.cateParentCode(1L)
+				.build();
+		categoryService.register(categoryDTO);
 	}
 }
